@@ -54,6 +54,8 @@ class LayerNorm(nn.Module):
         
         normalized = (inputs - mean) / torch.sqrt(var + self.eps)
         outputs = self.weight * normalized + self.bias
+        
+        return outputs
 
     def reset_parameters(self):
         nn.init.ones_(self.weight)
