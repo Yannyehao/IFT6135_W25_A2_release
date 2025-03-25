@@ -331,7 +331,25 @@ class MultiHeadedAttention(nn.Module):
         # TODO: Write your code here
         # ==========================
         
-        raise NotImplementedError
+        # Q, K, V
+        Q = self.W_Q(queries)
+        K = self.W_K(keys)
+        V = self.W_V(values)
+        
+        # split into multiple heads
+        Q = self.split_heads(Q)
+        K = self.split_heads(K)
+        V = self.split_heads(V)
+        
+        # apply attention
+        attended, attn_weights = self.apply_attention(Q, K, V)
+        
+        # final projection
+        outputs = self.W_O(attended)
+        
+        attn_weights = attn_weights.clone().detach()
+        
+        return outputs, attn_weights
 
         # Use clone().detach() to detach attn_weights from the computation graph
         # Since we don't need to backpropagate through them, we can detach them from the graph
