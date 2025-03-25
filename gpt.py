@@ -629,7 +629,13 @@ class GPT(nn.Module):
                 (batch_size, num_layers, num_heads, sequence_length, sequence_length)
         """
 
-        raise NotImplementedError
+        embeddings = self.embedding(x) 
+        
+        final_output, hidden_states, attentions = self.decoder(embeddings)
+        
+        logits = self.classifier(final_output)
+        
+        return logits, hidden_states, attentions
 
 ########################################################################################
 ########################################################################################
