@@ -124,7 +124,20 @@ class MultiHeadedAttention(nn.Module):
         # TODO: Write your code here
         # ==========================
 
-        raise NotImplementedError
+        # queries and keys
+        B,num_heads, S, head_size = queries.size()
+        
+        # compute Q * K^T
+        scores = torch.matmul(queries, keys.transpose(-2, -1)) / math.sqrt(head_size)
+        
+        # A lower triangular mask
+        mask = torch.tril(torch.ones(S, S,device = scores.device, dtype = torch.bool))
+        scores = scores.masked_fill(~mask, float('-inf'))
+        
+        # Softmax over the last dimension
+        attention_weights = F.softmax(scores, dim=-1)
+        
+        return attention_weights
 
     def apply_attention(self, queries, keys, values):
         """
