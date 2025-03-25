@@ -59,8 +59,18 @@ class LSTMCell(nn.Module):
         # ==========================
         # TODO: Write your code here
         # ==========================
+        
+        # Compute the input, forget, output gates, and candidate cell
+        i_t = torch.sigmoid(self.input_gate(combined)) 
+        f_t = torch.sigmoid(self.forget_gate(combined))
+        o_t = torch.sigmoid(self.output_gate(combined))
+        g_t = torch.tanh(self.candidate_cell(combined))
+        
+        # Update the cell and hidden states
+        c_t = f_t * c + i_t * g_t
+        h_t = o_t * torch.tanh(c_t)
 
-        raise NotImplementedError
+        return h_t, c_t
 
 ########################################################################################
 ########################################################################################
