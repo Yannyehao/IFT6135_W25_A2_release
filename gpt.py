@@ -214,7 +214,13 @@ class MultiHeadedAttention(nn.Module):
         # TODO: Write your code here
         # ==========================
 
-        raise NotImplementedError
+        batch_size, seq_len, hidden_dim = tensor.size()
+        dim = self.head_size
+        num_heads = self.num_heads
+        
+        return tensor.view(batch_size, seq_len, num_heads, dim).transpose(1, 2)
+        
+        
 
     def merge_heads(self, tensor):
         """
@@ -223,7 +229,7 @@ class MultiHeadedAttention(nn.Module):
         This function concatenates the head vectors in a single vector. This
         function also transposes the `sequence_length` and the newly created
         "merged" dimension. It only reshapes and transposes the input tensor,
-        and it does not apply any further transformation to the tensor. The
+        and it does not apply any further transformation to the tensßor. The
         function `merge_heads` is the inverse of the function `split_heads`.
 
         Parameters
@@ -242,7 +248,9 @@ class MultiHeadedAttention(nn.Module):
         # TODO: Write your code here
         # ==========================
         
-        raise NotImplementedError
+        batch_size, num_heads, seq_len, dim = tensor.size()
+        
+        return tensor.transpose(1, 2).contiguous().view(batch_size, seq_len, num_heads * dim)
 
     def forward(self,  queries: Tensor, keys: Tensor, values: Tensor):
         """
