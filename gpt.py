@@ -199,7 +199,16 @@ class MultiHeadedAttention(nn.Module):
         # TODO: Write your code here
         # ==========================
 
-        raise NotImplementedError
+        # get attetnion weights
+        attn_weights = self.get_attention_weights(queries, keys)
+        
+        # apply attention
+        attended_values = torch.matmul(attn_weights, values)
+        
+        # merge heads
+        outputs = self.merge_heads(attended_values)
+        
+        return outputs, attn_weights
 
 
     def split_heads(self, tensor):
