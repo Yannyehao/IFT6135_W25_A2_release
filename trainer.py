@@ -53,7 +53,54 @@ def get_loss_and_accuracy(logits, targets, eq_positions, mask, reduction='mean')
     # TODO: Write your code here
     # ==========================
 
-    raise NotImplementedError
+    B,S,V = logits.shape
+    
+    # Compute log probabilities
+    log_probs = F.log_softmax(logits, dim=-1)
+    
+    # Gather log probabilities of the target tokens
+    target_log_probs = log_probs.gather(dim=-1, index=targets.unsqueeze(-1)).squeeze(-1)
+    
+    positions = torch.arange(S, device=logits.device).unsqueeze(0).expand(B, S)
+    rhs_mask = (positions > eq_positions.unsqueeze(1)) & (mask.bool())
+
+    # Compute per-sample loss:
+    valid_token_counts = rhs_mask.sum(dim=1)  # shape: (B,)
+    sample_loss = - (target_log_probs * rhs_mask.float()).sum(dim=1) / valid_token_counts.clamp(min=1)
+
+    # Apply reduction to loss.
+    if reduction == 'mean':
+        loss = sample_loss.mean()
+    elif reduction == 'sum':
+        loss = sample_loss.sum()
+    elif reduction == 'none':
+        loss = sample_loss
+    else:
+        raise ValueError("Invalid reduction type. Choose 'none', 'mean', or 'sum'.")
+    
+    # Compute accuracy:
+    # Get predictions by taking the argmax over the vocabulary dimension.
+    predictions = torch.argmax(logits, dim=-1)  # shape: (B, S)
+    # Compare predictions with targets only for valid RHS tokens.
+    correct = (predictions == targets) & rhs_mask
+    # For each sample, count as correct if every valid RHS token is predicted correctly.
+    # In cases where there are no valid RHS tokens, we consider the sample as correct.
+    sample_accuracy = torch.where(
+        valid_token_counts > 0,
+        (correct.sum(dim=1) == valid_token_counts).float(),
+        torch.ones_like(valid_token_counts, dtype=torch.float)
+    )
+
+    # Apply reduction to accuracy.
+    if reduction == 'mean':
+        accuracy = sample_accuracy.mean()
+    elif reduction == 'sum':
+        accuracy = sample_accuracy.sum()
+    elif reduction == 'none':
+        accuracy = sample_accuracy
+    else:
+        raise ValueError("Invalid reduction type. Choose 'none', 'mean', or 'sum'.")
+
 
     return loss, accuracy
 
