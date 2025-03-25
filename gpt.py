@@ -549,7 +549,19 @@ class GPTEmbedding(nn.Module):
         # TODO: Write your code here
         # ==========================
         
-        raise NotImplementedError
+        batch_size, sequence_length = tokens.shape
+        
+        token_embeddings = self.tokens(tokens)
+        
+        positions = torch.arange(sequence_length,device=tokens.device).unsqueeze(0)
+        positions = positions.expand(batch_size, sequence_length)
+        
+        pos_embeds = self.position_encoding[positions]
+        
+        embeddings = token_embeddings + pos_embeds
+        
+        return embeddings
+    
 
 ########################################################################################
 ########################################################################################
