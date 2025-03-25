@@ -242,7 +242,15 @@ class LSTMLM(nn.Module):
         # TODO: Write your code here
         # ==========================
 
-        raise NotImplementedError
+        
+       
+        x_embed = self.embedding(x)
+        
+        lstm_output, (h_n, c_n) = self.lstm(x_embed, hidden_states)
+        
+        logits = self.classifier(lstm_output)
+        
+        return logits, (h_n, c_n)
 
 ########################################################################################
 ########################################################################################
