@@ -631,7 +631,7 @@ class GPT(nn.Module):
 
         embeddings = self.embedding(x) 
         
-        final_output, hidden_states, attentions = self.decoder(embeddings)
+        final_output, (hidden_states, attentions) = self.decoder(embeddings)
         
         logits = self.classifier(final_output)
         
