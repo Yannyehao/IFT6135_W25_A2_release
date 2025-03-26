@@ -635,7 +635,7 @@ class GPT(nn.Module):
         
         logits = self.classifier(final_output)
         
-        return logits, hidden_states, attentions
+        return logits, (hidden_states, attentions)
 
 ########################################################################################
 ########################################################################################
