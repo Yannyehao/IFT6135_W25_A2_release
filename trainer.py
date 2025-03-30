@@ -53,6 +53,9 @@ def get_loss_and_accuracy(logits, targets, eq_positions, mask, reduction='mean')
     # TODO: Write your code here
     # ==========================
 
+    eq_positions = eq_positions.to(logits.device)
+    mask = mask.to(logits.device)
+    
     B,S,V = logits.shape
     
     # Compute log probabilities

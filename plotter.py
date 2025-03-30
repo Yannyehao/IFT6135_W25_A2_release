@@ -53,6 +53,7 @@ def plot_loss_accs(
                     ax.plot(all_steps[j], z, '--', color=colors[j], label=f"Eval", lw=linewidth/2)
 
         else :
+            
             ax.plot(all_steps, statistics["train"][key], "-", color=color_1,  label=f"Train", lw=linewidth) 
             ax.plot(all_steps, statistics["test"][key], "-", color=color_2,  label=f"Eval", lw=linewidth) 
 
@@ -76,7 +77,7 @@ def plot_loss_accs(
 
     if fileName is not None and filePath is not None :
         os.makedirs(filePath, exist_ok=True)
-        plt.savefig(f"{filePath}/{fileName}"  + '.pdf', dpi=300, bbox_inches='tight', format='pdf')
+        plt.savefig(f"{filePath}/{fileName}"  + '.png', dpi=300, bbox_inches='tight', format='png')
 
     if show : plt.show()
     else : plt.close()
